@@ -6,9 +6,16 @@ import {searchLessons} from "./search-lessons.route";
 import {saveCourse} from './save-course.route';
 
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app: Application = express();
 
+app.use(cors({
+  "origin": "*",
+  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+  "preflightContinue": false,
+  "optionsSuccessStatus": 204
+}));
 app.use(bodyParser.json());
 
 app.route('/api/courses').get(getAllCourses);
