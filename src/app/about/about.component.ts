@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { noop } from 'rxjs';
-import { createHttpObservable } from '../common/util';
-import {map} from 'rxjs/operators';
-
+import { concat, of } from 'rxjs';
+import { concatAll } from 'rxjs/operators';
 
 @Component({
   selector: 'about',
@@ -13,15 +11,13 @@ export class AboutComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    const http$ = createHttpObservable('http://localhost:4201/api/courses');
-    const courses$ = http$.pipe(
-        map(res => Object.values(res["payload"]))
-    );
+    const source1$ = of(1, 2, 3);
+    const source2$ = of(4, 5, 6);
+    const source3$ = of(7, 8, 9);
 
-    courses$.subscribe(
-      courses => console.log(courses),
-      noop,
-      () => console.log('completed'));
+    const result$ = concat(source1$, source2$, source3$);
+
+    result$.subscribe(console.log);
   }
 }
 

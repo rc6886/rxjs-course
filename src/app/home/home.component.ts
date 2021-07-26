@@ -23,6 +23,9 @@ export class HomeComponent implements OnInit {
         const courses$ = http$.pipe(
             tap(() => console.log("HTTP request executed")),
             map(res => Object.values(res["payload"]) as Course[]),
+
+            // "Shares" the result of the observable by "replaying" the value to multiple streams.
+            // In this case, it prevents 2 network calls from being made.
             shareReplay()
         );
 

@@ -4,7 +4,7 @@ import {Course} from "../model/course";
 import {FormBuilder, Validators, FormGroup} from "@angular/forms";
 import * as moment from 'moment';
 import {fromEvent} from 'rxjs';
-import {concatMap, distinctUntilChanged, exhaustMap, filter, mergeMap} from 'rxjs/operators';
+import { concatMap, debounce, debounceTime, distinctUntilChanged, exhaustMap, filter, mergeMap } from 'rxjs/operators';
 import {fromPromise} from 'rxjs/internal-compatibility';
 
 @Component({
@@ -34,16 +34,27 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
             releasedAt: [moment(), Validators.required],
             longDescription: [course.longDescription,Validators.required]
         });
-
     }
 
     ngOnInit() {
-
-
-
+        this.form.valueChanges
+            .pipe(
+                filter(() => this.form.valid),
+                debounceTime(500),
+                concatMap(changes => this.saveCourse(changes))
+            )
+            .subscribe();
     }
 
-
+    saveCourse(changes) {
+        return fromPromise(fetch(`http://localhost:4201/api/courses/${this.course.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(changes),
+            headers: {
+                'content-type': 'application/json',
+            },
+        }));
+    }
 
     ngAfterViewInit() {
 
